@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../models/ticket.dart';
 import '../../services/api_service.dart';
+import './ticket_details_page.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -70,20 +72,39 @@ class _HomePageState extends State<HomePage> {
 
                 child: ListTile(
 
-                  title: Text(ticket.title),
+                      leading: const Icon(Icons.support_agent),
 
-                  subtitle: Text(
-                    "Priority: ${ticket.priority}\nStatus: ${ticket.status}",
-                  ),
+                      title: Text(ticket.title),
 
-                  leading: const Icon(Icons.support_agent),
+                      subtitle: Text(
+                        "Priority: ${ticket.priority}\nStatus: ${ticket.status}",
+                      ),
 
-                ),
+                      onTap: () {
 
+                        Navigator.push(
+
+                              context,
+
+                              MaterialPageRoute(
+
+                                builder: (context) => TicketDetailsPage(
+                                  ticket: ticket,
+                                ),
+
+                              ),
+
+                            );
+
+                          },
+
+                        ),
               );
             },
+
           );
         },
+
       ),
 
       floatingActionButton: FloatingActionButton(
