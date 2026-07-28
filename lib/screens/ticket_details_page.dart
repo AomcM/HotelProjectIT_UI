@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../models/ticket.dart';
 
 class TicketDetailsPage extends StatelessWidget {
-
   final Ticket ticket;
 
   const TicketDetailsPage({
@@ -12,24 +11,17 @@ class TicketDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       appBar: AppBar(
         title: const Text("Ticket Details"),
       ),
-
-      body: Padding(
-
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-
         child: Column(
-
           crossAxisAlignment: CrossAxisAlignment.start,
-
           children: [
 
-            Text(
+            const Text(
               "Title",
               style: TextStyle(
                 fontSize: 18,
@@ -41,7 +33,7 @@ class TicketDetailsPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            Text(
+            const Text(
               "Description",
               style: TextStyle(
                 fontSize: 18,
@@ -53,7 +45,7 @@ class TicketDetailsPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            Text(
+            const Text(
               "Priority",
               style: TextStyle(
                 fontSize: 18,
@@ -65,7 +57,7 @@ class TicketDetailsPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            Text(
+            const Text(
               "Status",
               style: TextStyle(
                 fontSize: 18,
@@ -75,14 +67,62 @@ class TicketDetailsPage extends StatelessWidget {
 
             Text(ticket.status),
 
+            const SizedBox(height: 30),
+
+            const Divider(),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              "AI Analysis",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              "Category",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            Text(ticket.category),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              "Suggested Priority",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            Text(ticket.suggestedPriority),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              "Suggested Solution",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            Text(ticket.suggestedSolution),
+
+            const SizedBox(height: 30),
+
           ],
-
         ),
-
       ),
-
     );
-
   }
-
 }

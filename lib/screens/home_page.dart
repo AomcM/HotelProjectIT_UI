@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../models/ticket.dart';
 import '../../services/api_service.dart';
 import './ticket_details_page.dart';
+import 'create_ticket_page.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -107,15 +108,17 @@ class _HomePageState extends State<HomePage> {
 
       ),
 
-      floatingActionButton: FloatingActionButton(
-
-        onPressed: () {
-
-        },
-
-        child: const Icon(Icons.add),
-
+     floatingActionButton: FloatingActionButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const CreateTicketPage(),
       ),
+    );
+  },
+  child: const Icon(Icons.add),
+),
 
     );
   }
