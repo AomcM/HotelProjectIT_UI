@@ -81,21 +81,20 @@ class _HomePageState extends State<HomePage> {
                         "Priority: ${ticket.priority}\nStatus: ${ticket.status}",
                       ),
 
-                      onTap: () {
+                      onTap: () async {
 
-                        Navigator.push(
+                        final updated = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => TicketDetailsPage(ticket: ticket),
+                            ),
+                          );
 
-                              context,
-
-                              MaterialPageRoute(
-
-                                builder: (context) => TicketDetailsPage(
-                                  ticket: ticket,
-                                ),
-
-                              ),
-
-                            );
+                              if (updated == true) {
+                                setState(() {
+                                  tickets = apiService.getTickets();
+                                });
+                              }
 
                           },
 
@@ -109,14 +108,20 @@ class _HomePageState extends State<HomePage> {
       ),
 
      floatingActionButton: FloatingActionButton(
-  onPressed: () {
-    Navigator.push(
+  onPressed: () async {
+   final created = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => const CreateTicketPage(),
       ),
     );
+     if (created == true) {
+      setState(() {
+        tickets = apiService.getTickets();
+      });
+    }
   },
+  
   child: const Icon(Icons.add),
 ),
 

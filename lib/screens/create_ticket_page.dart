@@ -6,7 +6,13 @@ import '../services/api_service.dart';
 
 
 class CreateTicketPage extends StatefulWidget {
-  const CreateTicketPage({super.key});
+
+  final Ticket? ticket;
+
+  const CreateTicketPage({
+    super.key,
+    this.ticket,
+  });
 
   @override
   State<CreateTicketPage> createState() => _CreateTicketPageState();
@@ -23,6 +29,11 @@ int? selectedDepartmentId;
 void initState() {
   super.initState();
 
+if (widget.ticket != null) {
+  _titleController.text = widget.ticket!.title;
+  _descriptionController.text = widget.ticket!.description;
+  selectedDepartmentId = widget.ticket!.departmentId;
+}
   loadDepartments();
 }
 Future<void> loadDepartments() async {
@@ -36,7 +47,11 @@ Future<void> loadDepartments() async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Create Ticket"),
+       title: Text(
+     widget.ticket == null
+      ? "Create Ticket"
+      : "Edit Ticket",
+),
       ),
 
      body: Padding(
@@ -102,7 +117,6 @@ SizedBox(
     );
     return;
   }
-
   Ticket ticket = Ticket(
   title: _titleController.text,
   description: _descriptionController.text,
@@ -116,27 +130,36 @@ SizedBox(
   suggestedPriority: "",
   suggestedSolution: "",
 );
-  bool success = await apiService.createTicket(ticket);
+  bool success;
+
+if (widget.ticket == null) {
+  // Create a new ticket
+  success = await apiService.createTicket(ticket);
+} else {
+  // Update an existing ticket
+  success = await apiService.updateTicket(
+    widget.ticket!.ticketId!,
+    ticket,
+  );
+}
   if (!mounted) return;
   if (success) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Ticket submitted successfully"),
-      ),
-    );
+  Navigator.pop(context, true);
+} else {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text("Failed to submit ticket"),
+    ),
+  );
 
     Navigator.pop(context);
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Failed to submit ticket"),
-      ),
-    );
-  }
-
-
+  } 
     },
-    child: const Text("Submit Ticket"),
+    child: Text(
+        widget.ticket == null
+      ? "Submit Ticket"
+      : "Save Changes",
+),
   ),
 ),
       ],

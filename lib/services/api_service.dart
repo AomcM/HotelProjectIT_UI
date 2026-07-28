@@ -61,4 +61,24 @@ class ApiService {
 
     }
   }
+  Future<bool> updateTicket(int id, Ticket ticket) async {
+
+  final response = await http.put(
+    Uri.parse("$baseUrl/$id"),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: jsonEncode(ticket.toJson()),
+  );
+
+  return response.statusCode == 204;
+}
+Future<bool> deleteTicket(int id) async {
+
+  final response = await http.delete(
+    Uri.parse("$baseUrl/$id"),
+  );
+
+  return response.statusCode == 204;
+}
 }
