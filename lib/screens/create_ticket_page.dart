@@ -125,6 +125,7 @@ SizedBox(
   userId: 4,
   technicianId: null,
   departmentId: selectedDepartmentId!,
+   departmentName: "",
 
   category: "",
   suggestedPriority: "",

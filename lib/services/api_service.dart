@@ -81,4 +81,56 @@ Future<bool> deleteTicket(int id) async {
 
   return response.statusCode == 204;
 }
+Future<bool> technicianUpdateTicket(
+  int id,
+  String priority,
+  String status,
+  int technicianId,
+) async {
+
+  final response = await http.put(
+    Uri.parse("$baseUrl/$id/technician"),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: jsonEncode({
+      "priority": priority,
+      "status": status,
+      "technicianId": technicianId,
+    }),
+  );
+
+  return response.statusCode == 204;
+}
+Future<List<Ticket>> getTechnicianTickets() async {
+  final response = await http.get(
+    Uri.parse("$baseUrl/technician"),
+  );
+
+  if (response.statusCode == 200) {
+    List data = jsonDecode(response.body);
+    return data.map((e) => Ticket.fromJson(e)).toList();
+  } else {
+    throw Exception("Failed to load technician tickets");
+  }
+}
+Future<bool> updateTechnicianTicket(
+    int ticketId,
+    String status,
+    int technicianId,
+) async {
+
+  final response = await http.put(
+    Uri.parse("$baseUrl/$ticketId/technician"),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: jsonEncode({
+      "status": status,
+      "technicianId": technicianId,
+    }),
+  );
+
+  return response.statusCode == 204;
+}
 }

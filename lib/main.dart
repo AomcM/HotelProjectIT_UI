@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/home_page.dart';
+import 'technician/technician_home_page.dart';
 
 void main() {
   runApp(const HotelITApp());
@@ -22,7 +23,7 @@ class HotelITApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      home: const HomePage(),
+      home: const TechnicianHomePage(),
 
     );
   }

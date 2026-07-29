@@ -7,6 +7,7 @@ class Ticket {
   final int userId;
   final int? technicianId;
   final int departmentId;
+  final String departmentName;
   final String category;
   final String suggestedPriority;
   final String suggestedSolution;
@@ -20,6 +21,7 @@ class Ticket {
     required this.userId,
     required this.technicianId,
     required this.departmentId,
+    required this.departmentName,
     required this.category,
     required this.suggestedPriority,
     required this.suggestedSolution,
@@ -36,6 +38,7 @@ class Ticket {
       userId: json["userId"],
       technicianId: json["technicianId"],
       departmentId: json["departmentId"],
+      departmentName: json["departmentName"] ?? "",
       category: json["category"] ?? "",
       suggestedPriority: json["suggestedPriority"] ?? "",
       suggestedSolution: json["suggestedSolution"] ?? "",
@@ -47,6 +50,7 @@ class Ticket {
     "title": title,
     "description": description,
     "departmentId": departmentId,
+    "departmentName": departmentName,
     "userId": userId,
     "category": category,
     "suggestedPriority": suggestedPriority,
