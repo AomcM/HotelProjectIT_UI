@@ -29,7 +29,7 @@ void initState() {
   selectedStatus = widget.ticket.status;
   selectedPriority = widget.ticket.priority;
 
-  technicianId = widget.ticket.technicianId ?? 1;
+  technicianId = widget.ticket.technicianId ?? 4;
 }
 
   @override
@@ -139,7 +139,8 @@ void initState() {
                 labelText: "Status",
                 border: OutlineInputBorder(),
               ),
-              items: const [
+                          items: const [
+               
                 DropdownMenuItem(
                   value: "Open",
                   child: Text("Open"),
@@ -147,10 +148,6 @@ void initState() {
                 DropdownMenuItem(
                   value: "In Progress",
                   child: Text("In Progress"),
-                ),
-                DropdownMenuItem(
-                  value: "Resolved",
-                  child: Text("Resolved"),
                 ),
                 DropdownMenuItem(
                   value: "Closed",
@@ -164,33 +161,37 @@ void initState() {
               },
             ),
             const SizedBox(height: 20),
+
             DropdownButtonFormField<String>(
-  value: selectedPriority,
-  decoration: const InputDecoration(
-    labelText: "Priority",
-    border: OutlineInputBorder(),
-  ),
-  items: const [
+                    value: selectedPriority,
+                    decoration: const InputDecoration(
+                      labelText: "Priority",
+                      border: OutlineInputBorder(),
+                    ),
+                    items: const [
+                       DropdownMenuItem(
+                      value: "Pending",
+                      child: Text("Pending"),
+                    ),
+                      DropdownMenuItem(
+                        value: "Low",
+                        child: Text("Low"),
+                      ),
 
-    DropdownMenuItem(
-      value: "Low",
-      child: Text("Low"),
-    ),
+                      DropdownMenuItem(
+                        value: "Medium",
+                        child: Text("Medium"),
+                      ),
 
-    DropdownMenuItem(
-      value: "Medium",
-      child: Text("Medium"),
-    ),
+                      DropdownMenuItem(
+                        value: "High",
+                        child: Text("High"),
+                      ),
 
-    DropdownMenuItem(
-      value: "High",
-      child: Text("High"),
-    ),
-
-    DropdownMenuItem(
-      value: "Critical",
-      child: Text("Critical"),
-    ),
+                      DropdownMenuItem(
+                        value: "Critical",
+                        child: Text("Critical"),
+                      ),
 
   ],
   onChanged: (value) {
@@ -208,17 +209,19 @@ void initState() {
                 onPressed: () async {
 
   bool success =
-      await ApiService().technicianUpdateTicket(
+    await ApiService().technicianUpdateTicket(
 
-    widget.ticket.ticketId!,
+  widget.ticket.ticketId!,
 
-    selectedPriority,
+  selectedPriority,
 
-    selectedStatus,
+  selectedStatus,
 
-    technicianId,
+  selectedStatus == "In Progress"
+    ? technicianId
+    : (widget.ticket.technicianId ?? technicianId),
 
-  );
+);
 
   if (!mounted) return;
 

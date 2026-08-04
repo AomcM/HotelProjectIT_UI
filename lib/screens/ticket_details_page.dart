@@ -169,17 +169,7 @@ class TicketDetailsPage extends StatelessWidget {
 
             Text(ticket.category),
 
-            const SizedBox(height: 20),
-
-            const Text(
-              "Suggested Priority",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            Text(ticket.suggestedPriority),
+           
 
             const SizedBox(height: 20),
 

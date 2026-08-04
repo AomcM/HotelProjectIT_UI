@@ -122,11 +122,11 @@ SizedBox(
   description: _descriptionController.text,
   priority: "",
   status: "",
+  createdAt: "",
   userId: 4,
   technicianId: null,
   departmentId: selectedDepartmentId!,
    departmentName: "",
-
   category: "",
   suggestedPriority: "",
   suggestedSolution: "",

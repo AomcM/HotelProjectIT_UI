@@ -4,10 +4,12 @@ class Ticket {
   final String description;
   final String priority;
   final String status;
+  final String createdAt;
   final int userId;
   final int? technicianId;
   final int departmentId;
   final String departmentName;
+  
   final String category;
   final String suggestedPriority;
   final String suggestedSolution;
@@ -18,6 +20,7 @@ class Ticket {
     required this.description,
     required this.priority,
     required this.status,
+    required this.createdAt,
     required this.userId,
     required this.technicianId,
     required this.departmentId,
@@ -35,6 +38,7 @@ class Ticket {
       description: json["description"],
       priority: json["priority"],
       status: json["status"],
+      createdAt: json["createdAt"] ?? "",
       userId: json["userId"],
       technicianId: json["technicianId"],
       departmentId: json["departmentId"],

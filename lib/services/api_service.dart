@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/ticket.dart';
 import '../models/department.dart';
+import '../models/technician_stats.dart';
 
 class ApiService {
 
@@ -132,5 +133,19 @@ Future<bool> updateTechnicianTicket(
   );
 
   return response.statusCode == 204;
+}
+
+Future<TechnicianStats> getTechnicianStats() async {
+  final response = await http.get(
+    Uri.parse("$baseUrl/technician/stats"),
+  );
+
+  if (response.statusCode == 200) {
+    return TechnicianStats.fromJson(
+      jsonDecode(response.body),
+    );
+  }
+
+  throw Exception("Failed to load technician statistics");
 }
 }
