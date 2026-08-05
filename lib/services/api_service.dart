@@ -3,17 +3,18 @@ import 'package:http/http.dart' as http;
 import '../models/ticket.dart';
 import '../models/department.dart';
 import '../models/technician_stats.dart';
+import '../models/login_response.dart';
 
 class ApiService {
 
-  static const String baseUrl = "http://localhost:5262/api/Tickets";
+  static const String baseUrl = "http://localhost:5262/api";
 
   static const String departmentUrl =
       "http://localhost:5262/api/Departments";
 
   Future<List<Ticket>> getTickets() async {
 
-    final response = await http.get(Uri.parse(baseUrl));
+    final response = await http.get(Uri.parse("$baseUrl/Tickets"));
 
     if (response.statusCode == 200) {
 
@@ -31,7 +32,7 @@ class ApiService {
   Future<bool> createTicket(Ticket ticket) async {
 
     final response = await http.post(
-      Uri.parse(baseUrl),
+      Uri.parse("$baseUrl/Tickets"),
       headers: {
         "Content-Type": "application/json",
       },
@@ -90,7 +91,7 @@ Future<bool> technicianUpdateTicket(
 ) async {
 
   final response = await http.put(
-    Uri.parse("$baseUrl/$id/technician"),
+    Uri.parse("$baseUrl/Tickets/$id/technician"),
     headers: {
       "Content-Type": "application/json",
     },
@@ -105,7 +106,7 @@ Future<bool> technicianUpdateTicket(
 }
 Future<List<Ticket>> getTechnicianTickets() async {
   final response = await http.get(
-    Uri.parse("$baseUrl/technician"),
+    Uri.parse("$baseUrl/Tickets/technician"),
   );
 
   if (response.statusCode == 200) {
@@ -147,5 +148,28 @@ Future<TechnicianStats> getTechnicianStats() async {
   }
 
   throw Exception("Failed to load technician statistics");
+}
+Future<LoginResponse?> login(
+    String email,
+    String password,
+) async {
+  final response = await http.post(
+    Uri.parse("$baseUrl/Auth/login"),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: jsonEncode({
+      "email": email,
+      "passwordHash": password,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return LoginResponse.fromJson(
+      jsonDecode(response.body),
+    );
+  }
+
+  return null;
 }
 }

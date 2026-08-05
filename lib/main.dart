@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/home_page.dart';
 import 'technician/technician_home_page.dart';
+import 'screens/login_page.dart';
 
 void main() {
   runApp(const HotelITApp());
@@ -23,7 +24,7 @@ class HotelITApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      home: const TechnicianHomePage(),
+      home: const LoginPage(),
 
     );
   }
