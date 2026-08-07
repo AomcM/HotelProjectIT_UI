@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'screens/home_page.dart';
-import 'technician/technician_home_page.dart';
 import 'screens/login_page.dart';
 
 void main() {
@@ -17,7 +15,7 @@ class HotelITApp extends StatelessWidget {
 
       debugShowCheckedModeBanner: false,
 
-      title: "Hoatel IT",
+      title: "Hotel IT",
 
       theme: ThemeData(
         colorSchemeSeed: Colors.blue,

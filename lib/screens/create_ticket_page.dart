@@ -83,7 +83,7 @@ Future<void> loadDepartments() async {
 const SizedBox(height: 16),
 
 DropdownButtonFormField<int>(
-  value: selectedDepartmentId,
+  initialValue: selectedDepartmentId,
   decoration: const InputDecoration(
     labelText: "Department",
     border: OutlineInputBorder(),

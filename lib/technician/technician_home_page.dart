@@ -3,6 +3,8 @@ import '../models/ticket.dart';
 import '../services/api_service.dart';
 import 'technician_ticket_page.dart';
 import '../models/technician_stats.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../screens/login_page.dart';
 class TechnicianHomePage extends StatefulWidget {
   const TechnicianHomePage({super.key});
 
@@ -38,9 +40,29 @@ class _TechnicianHomePageState extends State<TechnicianHomePage> {
 
     return Scaffold(
 
-      appBar: AppBar(
-        title: const Text("IT Technician Dashboard"),
-      ),
+     appBar: AppBar(
+  title: const Text("Technician Dashboard"),
+  actions: [
+    IconButton(
+      icon: const Icon(Icons.logout),
+      onPressed: () async {
+  final prefs = await SharedPreferences.getInstance();
+
+  await prefs.clear();
+
+  if (!context.mounted) return;
+
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const LoginPage(),
+    ),
+    (route) => false,
+  );
+},
+    ),
+  ],
+),
 
       body: Column(
   children: [
@@ -115,7 +137,7 @@ class _TechnicianHomePageState extends State<TechnicianHomePage> {
         const SizedBox(width: 8),
         filterButton("In Progress"),
         const SizedBox(width: 8),
-        filterButton("Resolved"),
+        filterButton("Closed"),
       ],
     ),
   ),
@@ -190,6 +212,10 @@ class _TechnicianHomePageState extends State<TechnicianHomePage> {
               child: Text("No Open Tickets"),
             );
           }
+        for (var ticket in snapshot.data!) {
+          print("Ticket: ${ticket.title}");
+          print("Status: '${ticket.status}'");
+        }
 
         final ticketList = snapshot.data!
     .where((ticket) =>
@@ -200,7 +226,7 @@ class _TechnicianHomePageState extends State<TechnicianHomePage> {
          ticket.status.toLowerCase().contains(searchText))
         &&
         (selectedFilter == "All" ||
-         ticket.status == selectedFilter))
+        ticket.status.toLowerCase() == selectedFilter.toLowerCase()))
     .toList();
     if (selectedSort == "Priority") {
   const priorityOrder = {

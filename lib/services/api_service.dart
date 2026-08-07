@@ -7,27 +7,35 @@ import '../models/login_response.dart';
 
 class ApiService {
 
-  static const String baseUrl = "http://localhost:5262/api";
+  static const String baseUrl = "http://10.0.2.2:5262/api";
 
   static const String departmentUrl =
-      "http://localhost:5262/api/Departments";
+      "http://10.0.2.2:5262/api/Departments";
 
-  Future<List<Ticket>> getTickets() async {
+      
 
-    final response = await http.get(Uri.parse("$baseUrl/Tickets"));
+ Future<List<Ticket>> getTickets() async {
+  final response = await http.get(Uri.parse("$baseUrl/Tickets"));
 
-    if (response.statusCode == 200) {
+  print("Status: ${response.statusCode}");
+  print("Body: ${response.body}");
 
-      List data = jsonDecode(response.body);
+  if (response.statusCode == 200) {
+    List data = jsonDecode(response.body);
 
-      return data.map((e) => Ticket.fromJson(e)).toList();
+    print("API returned ${data.length} tickets");
 
-    } else {
-
-      throw Exception("Failed to load tickets");
-
+    for (var t in data) {
+      print("TicketId: ${t["ticketId"]}");
+      print("Status: ${t["status"]}");
     }
+
+    return data.map((e) => Ticket.fromJson(e)).toList();
+  } else {
+    throw Exception("Failed to load tickets");
   }
+}
+
 
   Future<bool> createTicket(Ticket ticket) async {
 
@@ -88,6 +96,7 @@ Future<bool> technicianUpdateTicket(
   String priority,
   String status,
   int technicianId,
+  String notes,
 ) async {
 
   final response = await http.put(
@@ -99,6 +108,7 @@ Future<bool> technicianUpdateTicket(
       "priority": priority,
       "status": status,
       "technicianId": technicianId,
+      "notes": notes,
     }),
   );
 
@@ -116,35 +126,19 @@ Future<List<Ticket>> getTechnicianTickets() async {
     throw Exception("Failed to load technician tickets");
   }
 }
-Future<bool> updateTechnicianTicket(
-    int ticketId,
-    String status,
-    int technicianId,
-) async {
-
-  final response = await http.put(
-    Uri.parse("$baseUrl/$ticketId/technician"),
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: jsonEncode({
-      "status": status,
-      "technicianId": technicianId,
-    }),
-  );
-
-  return response.statusCode == 204;
-}
 
 Future<TechnicianStats> getTechnicianStats() async {
-  final response = await http.get(
-    Uri.parse("$baseUrl/technician/stats"),
-  );
+  final url = "$baseUrl/Tickets/technician/stats";
+
+  print("GET => $url");
+
+  final response = await http.get(Uri.parse(url));
+
+  print("Status: ${response.statusCode}");
+  print("Body: ${response.body}");
 
   if (response.statusCode == 200) {
-    return TechnicianStats.fromJson(
-      jsonDecode(response.body),
-    );
+    return TechnicianStats.fromJson(jsonDecode(response.body));
   }
 
   throw Exception("Failed to load technician statistics");

@@ -3,6 +3,8 @@ import '../../models/ticket.dart';
 import '../../services/api_service.dart';
 import './ticket_details_page.dart';
 import 'create_ticket_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'login_page.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -30,8 +32,28 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
 
       appBar: AppBar(
-        title: const Text("Hotel IT Support"),
-      ),
+  title: const Text("Hotel IT"),
+  actions: [
+    IconButton(
+      icon: const Icon(Icons.logout),
+      onPressed: () async {
+        final prefs = await SharedPreferences.getInstance();
+
+        await prefs.clear();
+
+        if (!context.mounted) return;
+
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const LoginPage(),
+          ),
+          (route) => false,
+        );
+      },
+    ),
+  ],
+),
 
       body: FutureBuilder<List<Ticket>>(
 

@@ -5,10 +5,12 @@ import '../services/api_service.dart';
 
 class TicketDetailsPage extends StatelessWidget {
   final Ticket ticket;
+  
 
   const TicketDetailsPage({
     super.key,
     required this.ticket,
+    
   });
 
   @override
