@@ -19,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   final prefs = await SharedPreferences.getInstance();
   print("Stored role: ${prefs.getString("role")}");
   final role = prefs.getString("role");
+  final userId = prefs.getInt("userId");
 
   if (role == null) return;
 
@@ -30,12 +31,14 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   } else if (role.toLowerCase().contains("technician")) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const TechnicianHomePage(),
-      ),
-    );
+   Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(
+    builder: (_) => TechnicianHomePage(
+     technicianId: userId!,
+    ),
+  ),
+);
   }
 }
   @override
@@ -136,7 +139,9 @@ void initState() {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (_) => const TechnicianHomePage(),
+             builder: (_) => TechnicianHomePage(
+  technicianId: login.userId,
+),
             ),
           );
 

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import '../models/ticket.dart';
 import '../services/api_service.dart';
-
 class TechnicianTicketPage extends StatefulWidget {
   final Ticket ticket;
+  final int technicianId;
 
   const TechnicianTicketPage({
     super.key,
     required this.ticket,
+    required this.technicianId,
   });
 
   @override
@@ -22,18 +23,21 @@ class _TechnicianTicketPageState
   late int technicianId;
   late TextEditingController notesController;
 
+
   @override
-  void initState() {
-    super.initState();
+void initState() {
+  super.initState();
 
-    selectedStatus = widget.ticket.status;
-    selectedPriority = widget.ticket.priority;
-    technicianId = widget.ticket.technicianId ?? 4;
+  selectedStatus = widget.ticket.status;
+  selectedPriority = widget.ticket.priority;
 
- notesController = TextEditingController(
-  text: widget.ticket.notes ?? "",
-);
-  }
+  technicianId = widget.technicianId;
+
+  notesController = TextEditingController(
+    text: widget.ticket.technicianNotes ?? "",
+  );
+}
+
 
   @override
   void dispose() {
@@ -204,17 +208,14 @@ class _TechnicianTicketPageState
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  bool success =
-                      await ApiService().technicianUpdateTicket(
-                    widget.ticket.ticketId!,
-                    selectedPriority,
-                    selectedStatus,
-                    selectedStatus == "In Progress"
-                        ? technicianId
-                        : (widget.ticket.technicianId ?? technicianId),
-                    notesController.text,
-                  );
-
+                 bool success =
+                   await ApiService().technicianUpdateTicket(
+                widget.ticket.ticketId!,
+                selectedPriority,
+                selectedStatus,
+                technicianId,
+                notesController.text,
+              );
                   if (!mounted) return;
 
                   if (success) {

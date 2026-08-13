@@ -14,7 +14,7 @@ class Ticket {
   final String suggestedPriority;
   final String suggestedSolution;
   final String? technicianNotes;
-  final String? notes;
+  
   Ticket({
     this.ticketId,
     required this.title,
@@ -30,7 +30,7 @@ class Ticket {
     required this.suggestedPriority,
     required this.suggestedSolution,
     this.technicianNotes,
-    this.notes,
+    
   });
 
   factory Ticket.fromJson(Map<String, dynamic> json) {
@@ -49,7 +49,7 @@ class Ticket {
       suggestedPriority: json["suggestedPriority"] ?? "",
       suggestedSolution: json["suggestedSolution"] ?? "",
       technicianNotes: json["technicianNotes"],
-      notes: json["notes"],
+      
     );
   }
 

@@ -143,6 +143,23 @@ class TicketDetailsPage extends StatelessWidget {
             ),
 
             Text(ticket.status),
+            const SizedBox(height: 20),
+
+                const Text(
+                  "Technician Notes",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                Text(
+                  ticket.technicianNotes?.isNotEmpty == true
+                      ? ticket.technicianNotes!
+                      : "No technician notes yet",
+                ),
 
             const SizedBox(height: 30),
 
@@ -183,11 +200,16 @@ class TicketDetailsPage extends StatelessWidget {
               ),
             ),
 
-            Text(ticket.suggestedSolution),
+           Text(ticket.suggestedSolution),
 
-            const SizedBox(height: 30),
+const SizedBox(height: 30),
 
-          ],
+const Divider(),
+
+
+const SizedBox(height: 30),
+
+          ],  
         ),
       ),
     );

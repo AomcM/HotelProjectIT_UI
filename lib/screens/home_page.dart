@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    tickets = apiService.getTickets();
+    tickets = apiService.getMyTickets();
   }
 
   @override
@@ -114,7 +114,7 @@ class _HomePageState extends State<HomePage> {
 
                               if (updated == true) {
                                 setState(() {
-                                  tickets = apiService.getTickets();
+                                  tickets = apiService.getMyTickets();
                                 });
                               }
 
@@ -139,7 +139,7 @@ class _HomePageState extends State<HomePage> {
     );
      if (created == true) {
       setState(() {
-        tickets = apiService.getTickets();
+        tickets = apiService.getMyTickets();
       });
     }
   },

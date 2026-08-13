@@ -6,34 +6,70 @@ import '../models/technician_stats.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/login_page.dart';
 class TechnicianHomePage extends StatefulWidget {
-  const TechnicianHomePage({super.key});
+  final int technicianId;
+
+  const TechnicianHomePage({
+    super.key,
+    required this.technicianId,
+  });
 
   @override
-  State<TechnicianHomePage> createState() => _TechnicianHomePageState();
+  State<TechnicianHomePage> createState() =>
+      _TechnicianHomePageState();
 }
-
 class _TechnicianHomePageState extends State<TechnicianHomePage> {
 
   final ApiService apiService = ApiService();
   late Future<TechnicianStats> stats;
   late Future<List<Ticket>> tickets;
+  int? technicianId;
   final TextEditingController searchController = TextEditingController();
 
   String searchText = "";
-  String selectedFilter = "All";
+  String selectedFilter = "Open";
   String selectedSort = "Priority";
   @override
-  void initState() {
-    super.initState();
-    stats = apiService.getTechnicianStats();
-    tickets = apiService.getTechnicianTickets();
+void initState() {
+  super.initState();
+
+  loadTechnicianData();
+}
+
+Future<void> loadTechnicianData() async {
+  final prefs = await SharedPreferences.getInstance();
+
+  final savedTechnicianId = prefs.getInt("userId");
+
+  if (savedTechnicianId == null) {
+    print("ERROR: Technician ID not found");
+    return;
   }
 
-  Future<void> refreshTickets() async {
-    setState(() {
-      tickets = apiService.getTechnicianTickets();
-    });
-  }
+  setState(() {
+    technicianId = savedTechnicianId;
+
+    tickets = apiService.getTechnicianTickets(
+      technicianId: technicianId,
+      status: "All",
+    );
+
+    stats = apiService.getTechnicianStats(
+      technicianId!,
+    );
+  });
+
+  print("Logged-in Technician ID: $technicianId");
+}
+ Future<void> refreshTickets() async {
+  if (technicianId == null) return;
+
+  setState(() {
+    tickets = apiService.getTechnicianTickets(
+      technicianId: technicianId,
+      status: selectedFilter,
+    );
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -131,8 +167,6 @@ class _TechnicianHomePageState extends State<TechnicianHomePage> {
     scrollDirection: Axis.horizontal,
     child: Row(
       children: [
-        filterButton("All"),
-        const SizedBox(width: 8),
         filterButton("Open"),
         const SizedBox(width: 8),
         filterButton("In Progress"),
@@ -311,18 +345,26 @@ else if (selectedSort == "Oldest") {
                     trailing: const Icon(Icons.arrow_forward_ios),
 
                     onTap: () async {
-
+          print("Logged-in technician ID: ${widget.technicianId}");
                       final updated = await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => TechnicianTicketPage(ticket: ticket),
+                          
+                          builder: (_) => TechnicianTicketPage(
+                          ticket: ticket,
+                          technicianId: widget.technicianId,
+                        ),
                         ),
                       );
 
-                      if (updated == true) {
+                    if (updated == true) {
                         setState(() {
-                          tickets = apiService.getTechnicianTickets();
-                          stats = apiService.getTechnicianStats();
+                          tickets = apiService.getTechnicianTickets(
+                            technicianId: technicianId,
+                            status: "All",
+                          );
+
+                          stats = apiService.getTechnicianStats(technicianId!);
                         });
                       }
                     },
@@ -342,10 +384,17 @@ else if (selectedSort == "Oldest") {
  Widget buildStatCard(String title, int value, Color color) {
   return GestureDetector(
     onTap: () {
-      setState(() {
-        selectedFilter = title;
-      });
-    },
+  if (technicianId == null) return;
+
+  setState(() {
+    selectedFilter = title;
+
+    tickets = apiService.getTechnicianTickets(
+      technicianId: technicianId,
+      status: title,
+    );
+  });
+},
     child: Card(
       elevation: 3,
       child: Padding(
@@ -375,9 +424,35 @@ Widget filterButton(String status) {
   return ChoiceChip(
     label: Text(status),
     selected: selectedFilter == status,
-    onSelected: (_) {
+    onSelected: (_) async {
+      if (technicianId == null) return;
+
       setState(() {
         selectedFilter = status;
+      });
+
+      setState(() {
+        if (status == "All") {
+          tickets = apiService.getTechnicianTickets(
+            technicianId: technicianId,
+            status: "All",
+          );
+        } else if (status == "Open") {
+          tickets = apiService.getTechnicianTickets(
+            technicianId: technicianId,
+            status: "Open",
+          );
+        } else if (status == "In Progress") {
+          tickets = apiService.getTechnicianTickets(
+            technicianId: technicianId,
+            status: "In Progress",
+          );
+        } else if (status == "Closed") {
+          tickets = apiService.getTechnicianTickets(
+            technicianId: technicianId,
+            status: "Closed",
+          );
+        }
       });
     },
   );
