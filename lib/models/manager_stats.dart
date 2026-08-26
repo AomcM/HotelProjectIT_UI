@@ -1,18 +1,18 @@
-class TechnicianStats {
+class ManagerStats {
   final int open;
   final int inProgress;
   final int resolved;
   final int closed;
 
-  TechnicianStats({
+  ManagerStats({
     required this.open,
     required this.inProgress,
     required this.resolved,
     required this.closed,
   });
 
-  factory TechnicianStats.fromJson(Map<String, dynamic> json) {
-    return TechnicianStats(
+  factory ManagerStats.fromJson(Map<String, dynamic> json) {
+    return ManagerStats(
       open: json["open"],
       inProgress: json["inProgress"],
       resolved: json["resolved"],

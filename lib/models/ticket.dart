@@ -7,6 +7,7 @@ class Ticket {
   final String createdAt;
   final int userId;
   final int? technicianId;
+  final String technicianName;
   final int departmentId;
   final String departmentName;
   
@@ -24,6 +25,7 @@ class Ticket {
     required this.createdAt,
     required this.userId,
     required this.technicianId,
+    required this.technicianName,
     required this.departmentId,
     required this.departmentName,
     required this.category,
@@ -43,6 +45,7 @@ class Ticket {
       createdAt: json["createdAt"] ?? "",
       userId: json["userId"],
       technicianId: json["technicianId"],
+      technicianName: json["technicianName"] ?? "",
       departmentId: json["departmentId"],
       departmentName: json["departmentName"] ?? "",
       category: json["category"] ?? "",

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import '../models/ticket.dart';
 import '../services/api_service.dart';
-import 'technician_ticket_page.dart';
 import '../models/technician_stats.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../screens/login_page.dart';
+import '../theme/app_theme.dart';
+import '../widgets/hotel_app_bar.dart';
+import 'technician_ticket_details_page.dart';
+import 'technician_tickets_list_page.dart';
+import 'technician_profile_page.dart';
+
 class TechnicianHomePage extends StatefulWidget {
   final int technicianId;
 
@@ -14,11 +18,48 @@ class TechnicianHomePage extends StatefulWidget {
   });
 
   @override
-  State<TechnicianHomePage> createState() =>
-      _TechnicianHomePageState();
+  State<TechnicianHomePage> createState() => _TechnicianHomePageState();
 }
-class _TechnicianHomePageState extends State<TechnicianHomePage> {
 
+class _TechnicianHomePageState extends State<TechnicianHomePage> {
+  int currentTab = 0;
+
+  void goToTicketsTab() => setState(() => currentTab = 1);
+
+  @override
+  Widget build(BuildContext context) {
+    final tabs = [
+      _DashboardTab(technicianId: widget.technicianId, onViewAllTickets: goToTicketsTab),
+      TechnicianTicketsListPage(technicianId: widget.technicianId),
+      const TechnicianProfilePage(),
+    ];
+
+    return Scaffold(
+      body: IndexedStack(index: currentTab, children: tabs),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentTab,
+        onTap: (index) => setState(() => currentTab = index),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard_outlined), label: 'Dashboard'),
+          BottomNavigationBarItem(icon: Icon(Icons.confirmation_number_outlined), label: 'My Tickets'),
+          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
+        ],
+      ),
+    );
+  }
+}
+
+class _DashboardTab extends StatefulWidget {
+  final int technicianId;
+  final VoidCallback onViewAllTickets;
+
+  const _DashboardTab({required this.technicianId, required this.onViewAllTickets});
+
+  @override
+  State<_DashboardTab> createState() => _DashboardTabState();
+}
+
+class _DashboardTabState extends State<_DashboardTab> {
   final ApiService apiService = ApiService();
   late Future<TechnicianStats> stats;
   late Future<List<Ticket>> tickets;
@@ -27,471 +68,245 @@ class _TechnicianHomePageState extends State<TechnicianHomePage> {
 
   String searchText = "";
   String selectedFilter = "Open";
-  String selectedSort = "Priority";
+
   @override
-void initState() {
-  super.initState();
-
-  loadTechnicianData();
-}
-
-Future<void> loadTechnicianData() async {
-  final prefs = await SharedPreferences.getInstance();
-
-  final savedTechnicianId = prefs.getInt("userId");
-
-  if (savedTechnicianId == null) {
-    print("ERROR: Technician ID not found");
-    return;
+  void initState() {
+    super.initState();
+    loadTechnicianData();
   }
 
-  setState(() {
-    technicianId = savedTechnicianId;
+  Future<void> loadTechnicianData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedTechnicianId = prefs.getInt("userId");
 
-    tickets = apiService.getTechnicianTickets(
-      technicianId: technicianId,
-      status: "All",
-    );
+    if (savedTechnicianId == null) return;
 
-    stats = apiService.getTechnicianStats(
-      technicianId!,
-    );
-  });
+    setState(() {
+      technicianId = savedTechnicianId;
+      tickets = apiService.getTechnicianTickets(technicianId: technicianId, status: "All");
+      stats = apiService.getTechnicianStats(technicianId!);
+    });
+  }
 
-  print("Logged-in Technician ID: $technicianId");
-}
- Future<void> refreshTickets() async {
-  if (technicianId == null) return;
-
-  setState(() {
-    tickets = apiService.getTechnicianTickets(
-      technicianId: technicianId,
-      status: selectedFilter,
-    );
-  });
-}
+  Future<void> refreshAll() async {
+    if (technicianId == null) return;
+    setState(() {
+      tickets = apiService.getTechnicianTickets(technicianId: technicianId, status: "All");
+      stats = apiService.getTechnicianStats(technicianId!);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
-     appBar: AppBar(
-  title: const Text("Technician Dashboard"),
-  actions: [
-    IconButton(
-      icon: const Icon(Icons.logout),
-      onPressed: () async {
-  final prefs = await SharedPreferences.getInstance();
-
-  await prefs.clear();
-
-  if (!context.mounted) return;
-
-  Navigator.pushAndRemoveUntil(
-    context,
-    MaterialPageRoute(
-      builder: (_) => const LoginPage(),
-    ),
-    (route) => false,
-  );
-},
-    ),
-  ],
-),
-
-      body: Column(
-  children: [
-
-      Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      child: TextField(
-        controller: searchController,
-        decoration: InputDecoration(
-          hintText: "Search tickets...",
-          prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        onChanged: (value) {
-          setState(() {
-            searchText = value.toLowerCase();
-          });
-        },
+      appBar: HotelAppBar(
+        title: "Technician Dashboard",
       ),
-    ),
-    Padding(
-  padding: const EdgeInsets.symmetric(horizontal: 12),
-  child: Row(
-    children: [
-
-      const Text(
-        "Sort by:",
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
-
-      const SizedBox(width: 12),
-
-      DropdownButton<String>(
-        value: selectedSort,
-        items: const [
-
-          DropdownMenuItem(
-            value: "Priority",
-            child: Text("Priority"),
-          ),
-
-          DropdownMenuItem(
-            value: "Newest",
-            child: Text("Newest"),
-          ),
-
-          DropdownMenuItem(
-            value: "Oldest",
-            child: Text("Oldest"),
-          ),
-        ],
-        onChanged: (value) {
-          setState(() {
-            selectedSort = value!;
-          });
-        },
-      ),
-    ],
-  ),
-),
-    Padding(
-  padding: const EdgeInsets.symmetric(horizontal: 12),
-  child: SingleChildScrollView(
-    scrollDirection: Axis.horizontal,
-    child: Row(
-      children: [
-        filterButton("Open"),
-        const SizedBox(width: 8),
-        filterButton("In Progress"),
-        const SizedBox(width: 8),
-        filterButton("Closed"),
-      ],
-    ),
-  ),
-),
-    FutureBuilder<TechnicianStats>(
-      future: stats,
-      builder: (context, snapshot) {
-
-        if (!snapshot.hasData) {
-          return const Padding(
-            padding: EdgeInsets.all(16),
-            child: CircularProgressIndicator(),
-          );
-        }
-
-        final s = snapshot.data!;
-        
-        return Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
+      body: RefreshIndicator(
+        onRefresh: refreshAll,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              TextField(
+                controller: searchController,
+                decoration: const InputDecoration(
+                  hintText: "Search tickets...",
+                  prefixIcon: Icon(Icons.search, size: 20),
+                ),
+                onChanged: (value) => setState(() => searchText = value.toLowerCase()),
+              ),
 
-              Expanded(
-                child: buildStatCard(
-                  "Open",
-                  s.open,
-                  Colors.blue,
+              const SizedBox(height: 12),
+
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _filterChip("Open"),
+                    const SizedBox(width: 8),
+                    _filterChip("In Progress"),
+                    const SizedBox(width: 8),
+                    _filterChip("Resolved"),
+                    const SizedBox(width: 8),
+                    _filterChip("Closed"),
+                  ],
                 ),
               ),
 
-              const SizedBox(width: 10),
-             
+              const SizedBox(height: 16),
 
-              Expanded(
-                child: buildStatCard(
-                  "In Progress",
-                  s.inProgress,
-                  Colors.orange,
-                ),
+              // 3 stat tiles: Open / In Progress / Resolved
+              FutureBuilder<TechnicianStats>(
+                future: stats,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  final s = snapshot.data!;
+                  return Row(
+                    children: [
+                      Expanded(child: _statTile("Open", s.open, AppColors.statusOpen)),
+                      const SizedBox(width: 10),
+                      Expanded(child: _statTile("In Progress", s.inProgress, AppColors.statusInProgress)),
+                      const SizedBox(width: 10),
+                      Expanded(child: _statTile("Resolved", s.resolved, AppColors.statusResolved)),
+                    ],
+                  );
+                },
               ),
 
-              const SizedBox(width: 10),
+              const SizedBox(height: 24),
 
-              Expanded(
-                child: buildStatCard(
-                  "Closed",
-                  s.closed,
-                  Colors.green,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("My Assigned Tickets", style: Theme.of(context).textTheme.titleLarge),
+                  TextButton(onPressed: widget.onViewAllTickets, child: const Text("View All")),
+                ],
               ),
+              const SizedBox(height: 4),
+
+              FutureBuilder<List<Ticket>>(
+                future: tickets,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 40),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 40),
+                      child: Center(child: Text("No tickets found")),
+                    );
+                  }
+
+                  final ticketList = snapshot.data!
+                      .where((t) =>
+                          (t.title.toLowerCase().contains(searchText) ||
+                              t.departmentName.toLowerCase().contains(searchText)) &&
+                          (selectedFilter == "All" || t.status.toLowerCase() == selectedFilter.toLowerCase()))
+                      .take(3)
+                      .toList();
+
+                  if (ticketList.isEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      child: Center(
+                        child: Text("No \"$selectedFilter\" tickets", style: Theme.of(context).textTheme.bodyMedium),
+                      ),
+                    );
+                  }
+
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Column(
+                      children: [
+                        for (int i = 0; i < ticketList.length; i++) ...[
+                          InkWell(
+                            onTap: () async {
+                              final updated = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => TechnicianTicketDetailsPage(
+                                    ticket: ticketList[i],
+                                    technicianId: widget.technicianId,
+                                  ),
+                                ),
+                              );
+                              if (updated == true) refreshAll();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(ticketList[i].title, style: Theme.of(context).textTheme.titleMedium),
+                                        const SizedBox(height: 2),
+                                        Text(ticketList[i].departmentName, style: Theme.of(context).textTheme.bodyMedium),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    ticketList[i].status,
+                                    style: TextStyle(
+                                      color: AppColors.statusColor(ticketList[i].status),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (i != ticketList.length - 1) const Divider(height: 1),
+                        ],
+                      ],
+                    ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 24),
             ],
           ),
-        );
-      },
-    ),
-
-    Expanded(
-      child: FutureBuilder<List<Ticket>>(
-
-        future: tickets,
-
-        builder: (context, snapshot) {
-
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text("No Open Tickets"),
-            );
-          }
-        for (var ticket in snapshot.data!) {
-          print("Ticket: ${ticket.title}");
-          print("Status: '${ticket.status}'");
-        }
-
-        final ticketList = snapshot.data!
-    .where((ticket) =>
-        (ticket.title.toLowerCase().contains(searchText) ||
-         ticket.description.toLowerCase().contains(searchText) ||
-         ticket.departmentName.toLowerCase().contains(searchText) ||
-         ticket.priority.toLowerCase().contains(searchText) ||
-         ticket.status.toLowerCase().contains(searchText))
-        &&
-        (selectedFilter == "All" ||
-        ticket.status.toLowerCase() == selectedFilter.toLowerCase()))
-    .toList();
-    if (selectedSort == "Priority") {
-  const priorityOrder = {
-    "Critical": 0,
-    "High": 1,
-    "Medium": 2,
-    "Low": 3,
-    "Pending": 4,
-  };
-
-  ticketList.sort((a, b) {
-    return (priorityOrder[a.priority] ?? 99)
-        .compareTo(priorityOrder[b.priority] ?? 99);
-  });
-}
-else if (selectedSort == "Newest") {
-  ticketList.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-}
-else if (selectedSort == "Oldest") {
-  ticketList.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-}
-          return RefreshIndicator(
-
-            onRefresh: refreshTickets,
-
-            child: ListView.builder(
-
-              itemCount: ticketList.length,
-
-              itemBuilder: (context, index) {
-
-                final ticket = ticketList[index];
-
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  elevation: 3,
-                  child: ListTile(
-                    title: Text(
-                      ticket.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-
-                    subtitle: Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-
-                          Text("Department: ${ticket.departmentName}"),
-
-                          const SizedBox(height: 6),
-
-                          Row(
-                            children: [
-
-                              Chip(
-                                label: Text(ticket.status),
-                              ),
-
-                              const SizedBox(width: 10),
-
-                              Chip(
-                                backgroundColor: getPriorityColor(ticket.priority),
-                                label: Text(
-                                  ticket.priority,
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 6),
-
-                          Text("Created: ${ticket.createdAt}"),
-                        ],
-                      ),
-                    ),
-
-                    trailing: const Icon(Icons.arrow_forward_ios),
-
-                    onTap: () async {
-          print("Logged-in technician ID: ${widget.technicianId}");
-                      final updated = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          
-                          builder: (_) => TechnicianTicketPage(
-                          ticket: ticket,
-                          technicianId: widget.technicianId,
-                        ),
-                        ),
-                      );
-
-                    if (updated == true) {
-                        setState(() {
-                          tickets = apiService.getTechnicianTickets(
-                            technicianId: technicianId,
-                            status: "All",
-                          );
-
-                          stats = apiService.getTechnicianStats(technicianId!);
-                        });
-                      }
-                    },
-                  ),
-                );
-              },
-            ),
-          );
-        },
+        ),
       ),
-    ),
-  ],
-),
     );
-
   }
- Widget buildStatCard(String title, int value, Color color) {
-  return GestureDetector(
-    onTap: () {
-  if (technicianId == null) return;
 
-  setState(() {
-    selectedFilter = title;
-
-    tickets = apiService.getTechnicianTickets(
-      technicianId: technicianId,
-      status: title,
-    );
-  });
-},
-    child: Card(
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
+  Widget _statTile(String label, int value, Color color) {
+    final selected = selectedFilter == label;
+    return GestureDetector(
+      onTap: () => setState(() => selectedFilter = label),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(color: selected ? color : AppColors.border, width: selected ? 1.5 : 1),
+        ),
         child: Column(
           children: [
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              value.toString(),
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
-            ),
+            Text(value.toString(), style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: color)),
+            const SizedBox(height: 4),
+            Text(label, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
           ],
         ),
       ),
-    ),
-  );
-}
-Widget filterButton(String status) {
-  return ChoiceChip(
-    label: Text(status),
-    selected: selectedFilter == status,
-    onSelected: (_) async {
-      if (technicianId == null) return;
-
-      setState(() {
-        selectedFilter = status;
-      });
-
-      setState(() {
-        if (status == "All") {
-          tickets = apiService.getTechnicianTickets(
-            technicianId: technicianId,
-            status: "All",
-          );
-        } else if (status == "Open") {
-          tickets = apiService.getTechnicianTickets(
-            technicianId: technicianId,
-            status: "Open",
-          );
-        } else if (status == "In Progress") {
-          tickets = apiService.getTechnicianTickets(
-            technicianId: technicianId,
-            status: "In Progress",
-          );
-        } else if (status == "Closed") {
-          tickets = apiService.getTechnicianTickets(
-            technicianId: technicianId,
-            status: "Closed",
-          );
-        }
-      });
-    },
-  );
-}
-
-  Color getStatusColor(String status) {
-
-  switch (status) {
-
-    case "Open":
-      return Colors.green;
-
-    case "In Progress":
-      return Colors.orange;
-
-    case "Closed":
-      return Colors.red;
-
-    default:
-      return Colors.grey;
+    );
   }
-}
-Color getPriorityColor(String priority) {
-  switch (priority.toLowerCase()) {
-    case "critical":
-      return Colors.red;
 
-    case "high":
-      return Colors.orange;
-
-    case "medium":
-      return Colors.amber;
-
-    case "low":
-      return Colors.green;
-
-    default:
-      return Colors.grey;
+  Widget _filterChip(String status) {
+    final selected = selectedFilter == status;
+    return ChoiceChip(
+      label: Text(status),
+      selected: selected,
+      onSelected: (_) => setState(() => selectedFilter = status),
+      selectedColor: AppColors.navy,
+      backgroundColor: AppColors.surface,
+      side: BorderSide(color: selected ? AppColors.navy : AppColors.border),
+      labelStyle: TextStyle(
+        color: selected ? AppColors.textOnDark : AppColors.textPrimary,
+        fontWeight: FontWeight.w600,
+        fontSize: 13,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.pill)),
+    );
   }
-}
-
 }

@@ -5,6 +5,8 @@ import '../models/department.dart';
 import '../models/technician_stats.dart';
 import '../models/login_response.dart';
 import '../models/technician.dart';
+import '../models/manager_stats.dart';
+import '../models/app_user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
@@ -284,4 +286,185 @@ Future<List<Technician>> getTechnicians() async {
 
   throw Exception("Failed to load technicians");
 }
+Future<List<Ticket>> getManagerTickets() async {
+  final url = "$baseUrl/Tickets/manager";
+
+  print("GET => $url");
+
+  final response = await http.get(
+    Uri.parse(url),
+  );
+
+  print("Status: ${response.statusCode}");
+  print("Body: ${response.body}");
+
+  if (response.statusCode == 200) {
+    final List data = jsonDecode(response.body);
+
+    return data
+        .map((json) => Ticket.fromJson(json))
+        .toList();
+  }
+
+  throw Exception("Failed to load manager tickets");
+}
+
+
+Future<bool> assignTicketToTechnician(
+  int ticketId,
+  int technicianId,
+) async {
+  final url = "$baseUrl/Tickets/$ticketId/assign";
+
+  print("PUT => $url");
+
+  final response = await http.put(
+    Uri.parse(url),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: jsonEncode({
+      "technicianId": technicianId,
+    }),
+  );
+
+  print("Status: ${response.statusCode}");
+  print("Body: ${response.body}");
+
+  return response.statusCode == 204;
+}
+Future<bool> resolveTicket(int ticketId) async {
+  final url = Uri.parse(
+    "$baseUrl/Tickets/$ticketId/resolve",
+  );
+
+  print("PUT => $url");
+
+  final response = await http.put(
+    url,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  );
+
+  print("Status: ${response.statusCode}");
+  print("Body: ${response.body}");
+
+  return response.statusCode == 200;
+}
+Future<bool> closeTicket(int ticketId) async {
+  final url = Uri.parse(
+    "$baseUrl/Tickets/$ticketId/close",
+  );
+
+  print("PUT => $url");
+
+  final response = await http.put(
+    url,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  );
+
+  print("Status: ${response.statusCode}");
+  print("Body: ${response.body}");
+
+  return response.statusCode == 200;
+}
+Future<ManagerStats> getManagerStats() async {
+  final url = Uri.parse(
+    "$baseUrl/Tickets/manager/stats",
+  );
+
+  print("GET => $url");
+
+  final response = await http.get(url);
+
+  print("Status: ${response.statusCode}");
+  print("Body: ${response.body}");
+
+  if (response.statusCode == 200) {
+    return ManagerStats.fromJson(
+      jsonDecode(response.body),
+    );
+  }
+
+  throw Exception("Failed to load manager statistics");
+}
+Future<void> assignTechnician(
+  int ticketId,
+  int technicianId,
+) async {
+  final url = Uri.parse(
+    "$baseUrl/Tickets/$ticketId/assign",
+  );
+
+  print("PUT => $url");
+  print("TechnicianId => $technicianId");
+
+  final response = await http.put(
+    url,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: jsonEncode({
+      "technicianId": technicianId,
+    }),
+  );
+
+  print("Status: ${response.statusCode}");
+  print("Body: ${response.body}");
+
+  if (response.statusCode != 204) {
+    throw Exception(
+      "Failed to assign technician: ${response.statusCode}",
+    );
+  }
+}
+
+Future<List<AppUser>> getAllUsers() async {
+  final url = "$baseUrl/Users";
+
+  print("GET => $url");
+
+  final response = await http.get(Uri.parse(url));
+
+  print("Status: ${response.statusCode}");
+  print("Body: ${response.body}");
+
+  if (response.statusCode == 200) {
+    final List data = jsonDecode(response.body);
+
+    return data
+        .map((json) => AppUser.fromJson(json))
+        .toList();
+  }
+
+  throw Exception("Failed to load users");
+}
+
+Future<bool> changeUserPassword(
+  int userId,
+  String newPassword,
+) async {
+  final url = "$baseUrl/Users/$userId/password";
+
+  print("PUT => $url");
+
+  final response = await http.put(
+    Uri.parse(url),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: jsonEncode({
+      "newPassword": newPassword,
+    }),
+  );
+
+  print("Status: ${response.statusCode}");
+  print("Body: ${response.body}");
+
+  return response.statusCode == 204 || response.statusCode == 200;
+}
+
 }

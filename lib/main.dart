@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/login_page.dart';
-
+import 'theme/app_theme.dart';
 void main() {
   runApp(const HotelITApp());
 }
@@ -12,15 +12,12 @@ class HotelITApp extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return MaterialApp(
+        theme: AppTheme.light,
 
       debugShowCheckedModeBanner: false,
 
       title: "Hotel IT",
 
-      theme: ThemeData(
-        colorSchemeSeed: Colors.blue,
-        useMaterial3: true,
-      ),
 
       home: const LoginPage(),
 
