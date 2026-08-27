@@ -4,11 +4,11 @@ README
 
 🚀 Technologies
 
-Flutter,
-ASP.NET Core Web API,
-MySQL,
-Entity Framework Core,
-Gemini AI,
+-Flutter,
+-ASP.NET Core Web API,
+-MySQL,
+-Entity Framework Core,
+-Gemini AI,
 ✨ Features
 
 User Authentication,
