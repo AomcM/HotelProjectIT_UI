@@ -168,64 +168,107 @@ This information helps technicians and managers understand and prioritize suppor
 
 # 📂 Project Structure
 
-## Backend
+## Backend — ASP.NET Core Web API
 
 ```text
-HotelIT.API
-│
-├── Controllers
+HotelIT.API/
+├── Controllers/
+│   ├── AIAnalysisController.cs
+│   ├── AssetsController.cs
 │   ├── AuthController.cs
+│   ├── DepartmentsController.cs
+│   ├── GeminiController.cs
+│   ├── NotificationsController.cs
 │   ├── TicketsController.cs
 │   └── UsersController.cs
+│       └── ChangePassword endpoint
 │
-├── Data
+├── Data/
 │   └── HotelITDbContext.cs
 │
-├── DTOs
+├── DTOs/
+│   ├── AiAnalysisDto.cs
+│   ├── AssetDto.cs
+│   ├── ChangePasswordDto.cs
+│   ├── CreateTicketDto.cs
+│   ├── LoginDto.cs
+│   ├── ManagerAssignTicketDto.cs
+│   ├── NotificationDto.cs
+│   ├── TechnicianDto.cs
+│   ├── TechnicianUpdateTicketDto.cs
+│   ├── TicketDto.cs
+│   └── UserDto.cs
 │
-├── Models
+├── Models/
+│   ├── Aianalysis.cs
+│   ├── Assets.cs
+│   ├── Departments.cs
+│   ├── Notification.cs
+│   ├── Roles.cs
+│   ├── Tickets.cs
+│   └── Users.cs
 │
-├── Services
+├── Services/
 │   └── GeminiService.cs
 │
 ├── Program.cs
-└── appsettings.json
+├── appsettings.json
+├── appsettings.Development.json
+├── libman.json
+└── HotelIT.API.http
 ```
 
-## Flutter Application
+## Frontend — Flutter Application
 
 ```text
-lib
+lib/
+├── main.dart
 │
-├── models
-│   ├── ticket.dart
+├── theme/
+│   └── app_theme.dart
+│
+├── widgets/
+│   ├── hotel_app_bar.dart
+│   ├── status_badge.dart
+│   └── ticket_card.dart
+│
+├── models/
+│   ├── app_user.dart
+│   ├── department.dart
+│   ├── login_response.dart
+│   ├── manager_stats.dart
 │   ├── technician.dart
-│   └── ...
+│   ├── technician_stats.dart
+│   └── ticket.dart
 │
-├── services
+├── services/
 │   └── api_service.dart
 │
-├── screens
-│   ├── login_page.dart
-│   ├── home_page.dart
-│   ├── tickets_list_page.dart
-│   ├── ticket_details_page.dart
+├── screens/                         # Employee
 │   ├── create_ticket_page.dart
-│   └── profile_page.dart
+│   ├── home_page.dart
+│   ├── login_page.dart
+│   ├── notifications_page.dart
+│   ├── profile_page.dart
+│   ├── ticket_details_page.dart
+│   └── tickets_list_page.dart
 │
-├── technician
+├── technician/
 │   ├── technician_home_page.dart
-│   ├── technician_tickets_list_page.dart
+│   ├── technician_profile_page.dart
 │   ├── technician_ticket_details_page.dart
-│   ├── technician_update_ticket_page.dart
-│   └── technician_profile_page.dart
+│   ├── technician_tickets_list_page.dart
+│   └── technician_update_ticket_page.dart
 │
-└── manager
+└── manager/
+    ├── manage_users_page.dart
     ├── manager_home_page.dart
-    └── manager_ticket_details_page.dart
+    ├── manager_profile_page.dart
+    ├── manager_reports_page.dart
+    ├── manager_ticket_details_page.dart
+    └── manager_tickets_page.dart
 ```
 
----
 
 # 🔐 Authentication
 
@@ -412,31 +455,32 @@ Possible future improvements include:
 
 # 📊 Current Project Status
 
-| Feature                   | Status         |
-| ------------------------- | -------------- |
+| Feature                   | Status          |
+| ------------------------- | --------------  |
 | Employee ticket creation  | ✅ Completed    |
 | Employee ticket tracking  | ✅ Completed    |
 | Technician dashboard      | ✅ Completed    |
 | Technician ticket updates | ✅ Completed    |
 | Ticket assignment         | ✅ Completed    |
-| Manager ticket management | 🔄 In Progress |
+| Manager ticket management | ✅ Completed    |
 | Ticket statistics         | ✅ Completed    |
 | Search and filtering      | ✅ Completed    |
 | Password hashing          | ✅ Completed    |
-| JWT Authentication        | 🔄 In Progress |
-| AI ticket analysis        | ✅ Implemented  |
-| Reports dashboard         | 🔄 In Progress |
+| AI ticket analysis        | ✅ Completed    |
+| Reports dashboard         | ✅ Completed    |
 
 ---
 
 # 👨‍💻 Author
 
-**Mourad**
+**Mourad Ait Oumaach**
 
-Computer Science / IT Student
+IT Student
 Hotel IT Internship Project
 
----
+This project was developed as part of an internship project to create a **Hotel IT Support System** that improves communication between hotel employees, IT technicians, and IT managers.
+
+
 
 # 📄 License
 
